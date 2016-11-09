@@ -157,6 +157,24 @@ public class MalerichAlgorithmTests {
 		assertEquals(2, mst.getEdges().size());
 	}
 	
+	@Test public void testKruscal1() {
+		Graph<Weight, Weight> test = new Graph<Weight, Weight>();
+		test.setUndirectedGraph();
+
+		test.addVertex("A");
+		test.addVertex("B");
+		test.addVertex("C");
+
+		test.addEdge("A", "B", new Weight(1.0));
+		
+		// This graph is not connected, so Kruscal's algorithm will not work here.
+		// In my code I am denoting this by returning null, if you are failing this test
+		// I do not believe they explicitly stated how you're code should behave, 
+		// so I wouldn't worry about it too much.
+		IGraph<Weight, Weight> mst = GraphAlgorithms.Kruscal(test);
+		assertEquals(null, mst);
+	}
+	
 	/**
 	 * Very simple implementation of the weight interface for testing 
 	 * Kruscal's algorithm.
