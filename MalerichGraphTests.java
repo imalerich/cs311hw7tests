@@ -1,19 +1,23 @@
 package cs311.hw7.graph;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
+import cs311.hw7.graph.IGraph.DuplicateEdgeException;
 import cs311.hw7.graph.IGraph.DuplicateVertexException;
+import cs311.hw7.graph.IGraph.NoSuchVertexException;
 
 public class MalerichGraphTests {
+	
+	private final String KERMIT = "Kermit the Frog";
+	private final String RALPH = "Ralph the Dog";
 
 	@Test public void testAddVertices() {
-		// Create a graph and add some vertices to it.
-		Graph<String, String> test = new Graph();
+		Graph<String, String> test = new Graph<String, String>();
 		test.addVertex("A");
 		test.addVertex("B");
 		test.addVertex("C");
@@ -36,8 +40,7 @@ public class MalerichGraphTests {
 	}
 
 	@Test public void testAddVerticesFailure() {
-		// Create a graph and add some vertices to it.
-		Graph<String, String> test = new Graph();
+		Graph<String, String> test = new Graph<String, String>();
 		test.addVertex("A");
 		test.addVertex("B");
 		test.addVertex("C");
@@ -51,5 +54,139 @@ public class MalerichGraphTests {
 		
 		// Catch statement missed, test failed.
 		fail("Failed to throw DuplicateVertexException when adding duplicate vertex.");
+	}
+	
+	@Test public void testNeighborsDirected() {
+		Graph<String, String> test = new Graph<String, String>();
+		test.setDirectedGraph();
+
+		test.addVertex("A");
+		test.addVertex("B");
+		test.addVertex("C");
+		
+		test.addEdge("A", "B");
+		test.addEdge("A", "C");
+		
+		// Make sure we actually have 2 edges.
+		assertEquals(2, test.getEdges().size());
+		
+		// Get the neighbors of A, this should be both B and C.
+		List<IGraph.Vertex<String>> arr = test.getNeighbors("A");
+		assertEquals("Expected 2 neighbors of A", 2, arr.size());
+		
+		// Vertices B and C should have no neighbors.
+		arr = test.getNeighbors("B");
+		assertEquals("Expected 0 neighbors of B", 0, arr.size());
+		arr = test.getNeighbors("C");
+		assertEquals("Expected 0 neighbors of C", 0, arr.size());
+	}
+	
+	@Test public void testNeighborsUndirected() {
+		Graph<String, String> test = new Graph<String, String>();
+		test.setUndirectedGraph();
+
+		test.addVertex("A");
+		test.addVertex("B");
+		test.addVertex("C");
+		
+		test.addEdge("A", "B");
+		test.addEdge("A", "C");
+		
+		// Get the neighbors of A, this should be both B and C.
+		List<IGraph.Vertex<String>> arr = test.getNeighbors("A");
+		assertEquals("Expected 2 neighbors of A", 2, arr.size());
+		// B and C both have neighbors in A, but not each other.
+		arr = test.getNeighbors("B");
+		assertEquals("Expected 1 neighbors of B", 1, arr.size());
+		arr = test.getNeighbors("C");
+		assertEquals("Expected 1 neighbors of C", 1, arr.size());
+	}
+	
+	@Test public void testDuplicateEdgesDirected() {
+		Graph<String, String> test = new Graph<String, String>();
+		test.setDirectedGraph();
+
+		test.addVertex("A");
+		test.addVertex("B");
+		test.addVertex("C");
+		
+		test.addEdge("A", "B");
+		test.addEdge("A", "C");
+		
+		// This is okay because the graph is directed.
+		test.addEdge("B", "A");
+		
+		try {
+			// This is not okay.
+			test.addEdge("A", "C");
+		} catch (DuplicateEdgeException e) {
+			// Test passed.
+			return;
+		}
+		
+		fail("Graph class did not throw DuplicateEdgeException where expected.");
+	}
+	
+	@Test public void testDuplicateEdgesUndirected() {
+		Graph<String, String> test = new Graph<String, String>();
+		test.setUndirectedGraph();
+
+		test.addVertex("A");
+		test.addVertex("B");
+		test.addVertex("C");
+		
+		test.addEdge("A", "B");
+		test.addEdge("A", "C");
+		
+		try {
+			// This is not okay for an undirected graph.
+			test.addEdge("B", "A");
+		} catch (DuplicateEdgeException e) {
+			// Test passed.
+			return;
+		}
+		
+		fail("Graph class did not throw DuplicateEdgeException where expected.");
+	}
+	
+	@Test public void testAddEdgeWithInvalidVertices() {
+		Graph<String, String> test = new Graph<String, String>();
+		test.addVertex("A");
+		test.addVertex("B");
+		
+		try {
+			test.addEdge("A", "C");
+		} catch (NoSuchVertexException e) {
+			// Test passed.
+			return;
+		}
+		
+		fail("Invalid edge added. Cannot add edge (A,C) with no such vertex C.");
+	}
+	
+	@Test public void testVertexData() {
+		Graph<String, String> test = new Graph<String, String>();
+		test.addVertex("A", KERMIT);
+		test.addVertex("B", RALPH);
+		
+		assertEquals(KERMIT, test.getVertexData("A"));
+		assertEquals(RALPH, test.getVertexData("B"));
+	}
+	
+	@Test public void testEdgeData() {
+		Graph<String, String> test = new Graph<String, String>();
+		test.setDirectedGraph();
+		test.addVertex("A");
+		test.addVertex("B");
+		
+		test.addEdge("A", "B", KERMIT);
+		test.addEdge("B", "A", RALPH);
+
+		try {
+			assertEquals(KERMIT, test.getEdgeData("A", "B"));
+			assertEquals(RALPH, test.getEdgeData("B", "A"));
+		} catch (Exception e) {
+			fail("This really shouldn't throw an exception.");
+		}
 	}
 }
