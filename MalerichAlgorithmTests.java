@@ -69,7 +69,7 @@ public class MalerichAlgorithmTests {
 		// Make sure all edges are going forward in some way.
 		for (int i=1; i<100; i++) {
 			int r = (int)(Math.random() * 1000) % i;
-			test.addEdge(String.valueOf(i), String.valueOf(i));
+			test.addEdge(String.valueOf(i), String.valueOf(r));
 		}
 		
 		// Run a really big test, will never fail unless your code throws
