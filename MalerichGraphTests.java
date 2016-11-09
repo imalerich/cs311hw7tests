@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import cs311.hw7.graph.IGraph.DuplicateEdgeException;
 import cs311.hw7.graph.IGraph.DuplicateVertexException;
+import cs311.hw7.graph.IGraph.NoSuchEdgeException;
 import cs311.hw7.graph.IGraph.NoSuchVertexException;
 
 public class MalerichGraphTests {
@@ -91,6 +92,9 @@ public class MalerichGraphTests {
 		
 		test.addEdge("A", "B");
 		test.addEdge("A", "C");
+
+		// Make sure we actually have 2 edges.
+		assertEquals(2, test.getEdges().size());
 		
 		// Get the neighbors of A, this should be both B and C.
 		List<IGraph.Vertex<String>> arr = test.getNeighbors("A");
@@ -115,6 +119,7 @@ public class MalerichGraphTests {
 		
 		// This is okay because the graph is directed.
 		test.addEdge("B", "A");
+		assertEquals(3, test.getEdges().size());
 		
 		try {
 			// This is not okay.
@@ -188,5 +193,36 @@ public class MalerichGraphTests {
 		} catch (Exception e) {
 			fail("This really shouldn't throw an exception.");
 		}
+	}
+	
+	@Test public void testVertexDataFailure() {
+		Graph<String, String> test = new Graph<String, String>();
+		test.addVertex("A", KERMIT);
+		test.addVertex("B", RALPH);
+		
+		try {
+			test.getVertex("C");
+		} catch (NoSuchVertexException e) {
+			// Test passed.
+			return;
+		}
+		
+		fail("Graph class failed to throw NoSuchVertexException.");
+	}
+	
+	@Test public void testEdgeDataFailure() {
+		Graph<String, String> test = new Graph<String, String>();
+		test.setDirectedGraph();
+		test.addVertex("A");
+		test.addVertex("B");
+		
+		try {
+			test.getEdgeData("A", "B");
+		} catch (NoSuchEdgeException e) {
+			// Test passed.
+			return;
+		}
+		
+		fail("Graph class failed to throw NoSuchEdgeException.");
 	}
 }
