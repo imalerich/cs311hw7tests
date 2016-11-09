@@ -195,6 +195,22 @@ public class MalerichGraphTests {
 		}
 	}
 	
+	@Test public void testEdgeDataUndirected() {
+		Graph<String, String> test = new Graph<String, String>();
+		test.setUndirectedGraph();
+		test.addVertex("A");
+		test.addVertex("B");
+		test.addEdge("A", "B", KERMIT);
+
+		try {
+			assertEquals(KERMIT, test.getEdgeData("B", "A"));
+		} catch (NoSuchEdgeException e) {
+			fail("Make sure that edge BA counts as edge AB in an undirected graph.");
+		} catch (Exception e) {
+			fail();
+		}
+	}
+	
 	@Test public void testVertexDataFailure() {
 		Graph<String, String> test = new Graph<String, String>();
 		test.addVertex("A", KERMIT);
